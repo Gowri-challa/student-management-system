@@ -10,6 +10,7 @@ import com.gowri.studentmanagementsystem.service.StudentService;
 
 @RestController
 @RequestMapping("/student")
+@CrossOrigin(origins = "http://localhost:3000")
 public class StudentController {
 
     @Autowired
@@ -18,21 +19,18 @@ public class StudentController {
     // CREATE
     @PostMapping("/save")
     public Student saveStudent(@RequestBody Student student) {
-
         return service.saveStudent(student);
     }
 
     // READ ALL
     @GetMapping("/all")
     public List<Student> getAllStudents() {
-
         return service.getAllStudents();
     }
 
     // READ BY ID
     @GetMapping("/{id}")
     public Student getStudentById(@PathVariable Long id) {
-
         return service.getStudentById(id);
     }
 
@@ -43,12 +41,11 @@ public class StudentController {
             @RequestBody Student student) {
 
         return service.updateStudent(id, student);
-    } 
+    }
 
     // DELETE
     @DeleteMapping("/delete/{id}")
     public String deleteStudent(@PathVariable Long id) {
-
         return service.deleteStudent(id);
     }
 }
