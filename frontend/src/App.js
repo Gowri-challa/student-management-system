@@ -1,8 +1,8 @@
-import './App.css';
+import "./App.css";
 import React, { useEffect, useState } from "react";
 
-import StudentForm from './components/StudentForm';
-import StudentList from './components/StudentList';
+import StudentForm from "./components/StudentForm";
+import StudentList from "./components/StudentList";
 
 import { getAllStudents } from "./services/StudentService";
 
@@ -25,13 +25,13 @@ function App() {
     }, []);
 
     return (
-        <div className="App">
+        <div className="container">
 
-            <h1>Student Management System</h1>
+            <h1 className="title">
+                Student Management System
+            </h1>
 
             <StudentForm refreshStudents={loadStudents} />
-
-            <hr />
 
             <StudentList
                 students={students}

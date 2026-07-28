@@ -11,33 +11,48 @@ function StudentForm({ refreshStudents }) {
     });
 
     const handleChange = (e) => {
+
         setStudent({
+
             ...student,
+
             [e.target.name]: e.target.value
+
         });
+
     };
 
     const handleSubmit = (e) => {
+
         e.preventDefault();
 
         saveStudent(student)
+
             .then(() => {
+
                 alert("Student Added Successfully");
 
                 setStudent({
+
                     name: "",
                     email: "",
                     course: "",
                     fee: ""
+
                 });
 
                 refreshStudents();
+
             })
+
             .catch(err => console.log(err));
+
     };
 
     return (
-        <div>
+
+        <div className="form-card">
+
             <h2>Add Student</h2>
 
             <form onSubmit={handleSubmit}>
@@ -45,50 +60,47 @@ function StudentForm({ refreshStudents }) {
                 <input
                     type="text"
                     name="name"
-                    placeholder="Name"
+                    placeholder="Enter Name"
                     value={student.name}
                     onChange={handleChange}
                 />
 
-                <br /><br />
-
                 <input
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="Enter Email"
                     value={student.email}
                     onChange={handleChange}
                 />
 
-                <br /><br />
-
                 <input
                     type="text"
                     name="course"
-                    placeholder="Course"
+                    placeholder="Enter Course"
                     value={student.course}
                     onChange={handleChange}
                 />
 
-                <br /><br />
-
                 <input
                     type="number"
                     name="fee"
-                    placeholder="Fee"
+                    placeholder="Enter Fee"
                     value={student.fee}
                     onChange={handleChange}
                 />
 
-                <br /><br />
+                <button className="save-btn" type="submit">
 
-                <button type="submit">
                     Save Student
+
                 </button>
 
             </form>
+
         </div>
+
     );
+
 }
 
 export default StudentForm;
