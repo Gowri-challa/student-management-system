@@ -1,14 +1,28 @@
-import React, { useState } from "react";
-import { saveStudent } from "../services/StudentService";
+import React, { useEffect, useState } from "react";
+import "./StudentForm.css";
+import { saveStudent, updateStudent } from "../services/StudentService";
 
-function StudentForm({ refreshStudents }) {
+function StudentForm({
+    refreshStudents,
+    selectedStudent,
+    setSelectedStudent
+}) {
 
     const [student, setStudent] = useState({
+        id: "",
         name: "",
         email: "",
         course: "",
         fee: ""
     });
+
+    useEffect(() => {
+
+        if (selectedStudent) {
+            setStudent(selectedStudent);
+        }
+
+    }, [selectedStudent]);
 
     const handleChange = (e) => {
 
@@ -22,30 +36,61 @@ function StudentForm({ refreshStudents }) {
 
     };
 
+    const clearForm = () => {
+
+        setStudent({
+
+            id: "",
+            name: "",
+            email: "",
+            course: "",
+            fee: ""
+
+        });
+
+        setSelectedStudent(null);
+
+    };
+
     const handleSubmit = (e) => {
 
         e.preventDefault();
 
-        saveStudent(student)
+        if (student.id) {
 
-            .then(() => {
+            updateStudent(student.id, student)
 
-                alert("Student Added Successfully");
+                .then(() => {
 
-                setStudent({
+                    alert("Student Updated Successfully");
 
-                    name: "",
-                    email: "",
-                    course: "",
-                    fee: ""
+                    clearForm();
 
-                });
+                    refreshStudents();
 
-                refreshStudents();
+                })
 
-            })
+                .catch((err) => console.log(err));
 
-            .catch(err => console.log(err));
+        }
+
+        else {
+
+            saveStudent(student)
+
+                .then(() => {
+
+                    alert("Student Added Successfully");
+
+                    clearForm();
+
+                    refreshStudents();
+
+                })
+
+                .catch((err) => console.log(err));
+
+        }
 
     };
 
@@ -53,7 +98,11 @@ function StudentForm({ refreshStudents }) {
 
         <div className="form-card">
 
-            <h2>Add Student</h2>
+            <h2>
+
+                {student.id ? "Update Student" : "Add Student"}
+
+            </h2>
 
             <form onSubmit={handleSubmit}>
 
@@ -63,6 +112,7 @@ function StudentForm({ refreshStudents }) {
                     placeholder="Enter Name"
                     value={student.name}
                     onChange={handleChange}
+                    required
                 />
 
                 <input
@@ -71,6 +121,7 @@ function StudentForm({ refreshStudents }) {
                     placeholder="Enter Email"
                     value={student.email}
                     onChange={handleChange}
+                    required
                 />
 
                 <input
@@ -79,6 +130,7 @@ function StudentForm({ refreshStudents }) {
                     placeholder="Enter Course"
                     value={student.course}
                     onChange={handleChange}
+                    required
                 />
 
                 <input
@@ -87,11 +139,12 @@ function StudentForm({ refreshStudents }) {
                     placeholder="Enter Fee"
                     value={student.fee}
                     onChange={handleChange}
+                    required
                 />
 
                 <button className="save-btn" type="submit">
 
-                    Save Student
+                    {student.id ? "Update Student" : "Save Student"}
 
                 </button>
 
