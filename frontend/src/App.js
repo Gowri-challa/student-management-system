@@ -1,88 +1,42 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Dashboard from "./components/Dashboard";
-import SearchBar from "./components/SearchBar";
-import StudentForm from "./components/StudentForm";
-import StudentList from "./components/StudentList";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
 
-import { getAllStudents } from "./services/StudentService";
+import { isLoggedIn } from "./services/AuthService";
 
 function App() {
 
-    const [students, setStudents] = useState([]);
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const loadStudents = () => {
-
-        getAllStudents()
-            .then((response) => {
-                setStudents(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-
-    };
-
-    useEffect(() => {
-
-        loadStudents();
-
-    }, []);
-
     return (
 
-        <div className="container">
+        <BrowserRouter>
 
-            <h1 className="title">
+            <Routes>
 
-                Student Management System
+                <Route
+                    path="/"
+                    element={
+                        isLoggedIn() ?
+                            <Home /> :
+                            <Navigate to="/login" />
+                    }
+                />
 
-            </h1>
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
-            {/* Search Bar */}
+                <Route
+                    path="/signup"
+                    element={<Signup />}
+                />
 
-            <SearchBar
+            </Routes>
 
-                searchTerm={searchTerm}
-
-                setSearchTerm={setSearchTerm}
-
-            />
-
-            {/* Dashboard */}
-
-            <Dashboard students={students} />
-
-            {/* Student Form */}
-
-            <StudentForm
-
-                refreshStudents={loadStudents}
-
-                selectedStudent={selectedStudent}
-
-                setSelectedStudent={setSelectedStudent}
-
-            />
-
-            {/* Student List */}
-
-            <StudentList
-
-                students={students}
-
-                refreshStudents={loadStudents}
-
-                setSelectedStudent={setSelectedStudent}
-
-                searchTerm={searchTerm}
-
-            />
-
-        </div>
+        </BrowserRouter>
 
     );
 
