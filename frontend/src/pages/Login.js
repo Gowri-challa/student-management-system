@@ -38,9 +38,11 @@ function Login() {
             // Show success message
             setMessage("Login Successful!");
 
-            // Keep your original flow
+            // Navigate to Home and reload so App.js detects the token
             setTimeout(() => {
-                navigate("/");
+
+                window.location.href = "/";
+
             }, 1000);
 
         } catch (error) {

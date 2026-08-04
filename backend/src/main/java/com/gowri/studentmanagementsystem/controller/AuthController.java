@@ -4,7 +4,10 @@ import com.gowri.studentmanagementsystem.dto.AuthenticationResponse;
 import com.gowri.studentmanagementsystem.dto.LoginRequest;
 import com.gowri.studentmanagementsystem.dto.RegisterRequest;
 import com.gowri.studentmanagementsystem.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,16 +19,38 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/register")
-    public AuthenticationResponse register(
-            @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
-        return userService.register(request);
+        try {
+
+            AuthenticationResponse response = userService.register(request);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+
+        }
     }
 
     @PostMapping("/login")
-    public AuthenticationResponse login(
-            @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        return userService.login(request);
+        try {
+
+            AuthenticationResponse response = userService.login(request);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(e.getMessage());
+
+        }
     }
 }

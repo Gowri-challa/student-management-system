@@ -27,35 +27,35 @@ function Signup() {
 
     const handleSubmit = async (e) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        try {
+    try {
 
-            await register(formData);
+        await register(formData);
 
-            setMessage("Registration Successful!");
+        setMessage("Registration Successful!");
 
-            setTimeout(() => {
+        setTimeout(() => {
 
-                navigate("/login");
+            navigate("/login");
 
-            }, 1500);
+        }, 1500);
 
-        } catch (error) {
+    } catch (error) {
 
-            if (error.response) {
+        if (error.response) {
 
-                setMessage(error.response.data);
+            setMessage(error.response.data);
 
-            } else {
+        } else {
 
-                setMessage("Registration Failed");
-
-            }
+            setMessage("Registration Failed");
 
         }
 
-    };
+    }
+
+};
 
     return (
 
@@ -103,10 +103,15 @@ function Signup() {
 
                 </form>
 
-                <p className="success">
-
+                <p
+                    className="success"
+                    style={{
+                        color: message.includes("Successful")
+                            ? "green"
+                            : "red"
+                    }}
+                >
                     {message}
-
                 </p>
 
                 <div className="login-link">
