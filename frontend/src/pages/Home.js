@@ -1,5 +1,5 @@
 import "../App.css";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Dashboard from "../components/Dashboard";
@@ -18,7 +18,7 @@ function Home() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const loadStudents = () => {
+    const loadStudents = useCallback((retry = false) => {
 
         getAllStudents()
             .then((response) => {
@@ -26,15 +26,19 @@ function Home() {
             })
             .catch((error) => {
                 console.log(error);
+
+                if (retry) {
+                    setTimeout(() => loadStudents(false), 500);
+                }
             });
 
-    };
+    }, []);
 
     useEffect(() => {
 
-        loadStudents();
+        loadStudents(true);
 
-    }, []);
+    }, [loadStudents]);
 
     const handleLogout = () => {
 
@@ -80,11 +84,11 @@ function Home() {
 
             <Dashboard students={students} />
 
-            <StudentForm
+        <StudentForm
                 refreshStudents={loadStudents}
                 selectedStudent={selectedStudent}
                 setSelectedStudent={setSelectedStudent}
-            />
+            ></StudentForm>
 
             <StudentList
                 students={students}

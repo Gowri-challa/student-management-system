@@ -76,7 +76,14 @@ function StudentForm({
 
         else {
 
-            saveStudent(student)
+            const newStudent = {
+                name: student.name.trim(),
+                email: student.email.trim(),
+                course: student.course.trim(),
+                fee: Number(student.fee)
+            };
+
+            saveStudent(newStudent)
 
                 .then(() => {
 
@@ -88,7 +95,10 @@ function StudentForm({
 
                 })
 
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                    console.error("Unable to add student", err);
+                    alert(err.response?.data?.message || "Unable to add student. Please try again.");
+                });
 
         }
 
