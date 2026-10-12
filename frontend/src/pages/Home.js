@@ -1,3 +1,4 @@
+
 import "../App.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,47 +12,50 @@ import { getAllStudents } from "../services/StudentService";
 import { logout } from "../services/AuthService";
 
 function Home() {
-
     const navigate = useNavigate();
 
     const [students, setStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
 
-    const loadStudents = useCallback((retry = false) => {
+    // Fetch the latest student data from the backend
+    const loadStudents = useCallback(async (retry = false) => {
+        try {
+            const response = await getAllStudents();
 
-        getAllStudents()
-            .then((response) => {
-                setStudents(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
+            setStudents(response.data);
 
-                if (retry) {
-                    setTimeout(() => loadStudents(false), 500);
-                }
-            });
+            return response.data;
+        } catch (error) {
+            console.error("Unable to load students:", error);
 
+            if (retry) {
+                await new Promise((resolve) => setTimeout(resolve, 500));
+
+                return loadStudents(false);
+            }
+
+            throw error;
+        }
     }, []);
 
+    // Load students when the Home component mounts
     useEffect(() => {
-
-        loadStudents(true);
-
+        loadStudents(true).catch((error) => {
+            console.error(
+                "Failed to load students after retry:",
+                error
+            );
+        });
     }, [loadStudents]);
 
     const handleLogout = () => {
-
         logout();
-
         navigate("/login");
-
     };
 
     return (
-
         <div className="container">
-
             <div
                 style={{
                     display: "flex",
@@ -59,7 +63,6 @@ function Home() {
                     alignItems: "center"
                 }}
             >
-
                 <h1 className="title">
                     Student Management System
                 </h1>
@@ -74,7 +77,6 @@ function Home() {
                 >
                     Logout
                 </button>
-
             </div>
 
             <SearchBar
@@ -84,11 +86,11 @@ function Home() {
 
             <Dashboard students={students} />
 
-        <StudentForm
+            <StudentForm
                 refreshStudents={loadStudents}
                 selectedStudent={selectedStudent}
                 setSelectedStudent={setSelectedStudent}
-            ></StudentForm>
+            />
 
             <StudentList
                 students={students}
@@ -96,11 +98,8 @@ function Home() {
                 setSelectedStudent={setSelectedStudent}
                 searchTerm={searchTerm}
             />
-
         </div>
-
     );
-
 }
 
 export default Home;

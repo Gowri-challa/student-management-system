@@ -1,13 +1,16 @@
+
 import React, { useEffect, useState } from "react";
 import "./StudentForm.css";
-import { saveStudent, updateStudent } from "../services/StudentService";
+import {
+    saveStudent,
+    updateStudent
+} from "../services/StudentService";
 
 function StudentForm({
     refreshStudents,
     selectedStudent,
     setSelectedStudent
 }) {
-
     const [student, setStudent] = useState({
         id: "",
         name: "",
@@ -17,105 +20,94 @@ function StudentForm({
     });
 
     useEffect(() => {
-
         if (selectedStudent) {
             setStudent(selectedStudent);
         }
-
     }, [selectedStudent]);
 
     const handleChange = (e) => {
-
         setStudent({
-
             ...student,
-
             [e.target.name]: e.target.value
-
         });
-
     };
 
     const clearForm = () => {
-
         setStudent({
-
             id: "",
             name: "",
             email: "",
             course: "",
             fee: ""
-
         });
 
         setSelectedStudent(null);
-
     };
 
-    const handleSubmit = (e) => {
-
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (student.id) {
-
-            updateStudent(student.id, student)
-
-                .then(() => {
-
-                    alert("Student Updated Successfully");
-
-                    clearForm();
-
-                    refreshStudents();
-
-                })
-
-                .catch((err) => console.log(err));
-
-        }
-
-        else {
-
-            const newStudent = {
-                name: student.name.trim(),
-                email: student.email.trim(),
-                course: student.course.trim(),
-                fee: Number(student.fee)
-            };
-
-            saveStudent(newStudent)
-
-                .then(() => {
-
-                    alert("Student Added Successfully");
-
-                    clearForm();
-
-                    refreshStudents();
-
-                })
-
-                .catch((err) => {
-                    console.error("Unable to add student", err);
-                    alert(err.response?.data?.message || "Unable to add student. Please try again.");
+        try {
+            if (student.id) {
+                // Update an existing student
+                await updateStudent(student.id, {
+                    ...student,
+                    fee: Number(student.fee)
                 });
 
+                clearForm();
+
+                alert("Student Updated Successfully");
+            } else {
+                // Create a new student
+                const newStudent = {
+                    name: student.name.trim(),
+                    email: student.email.trim(),
+                    course: student.course.trim(),
+                    fee: Number(student.fee)
+                };
+
+                await saveStudent(newStudent);
+
+                clearForm();
+
+                alert("Student Added Successfully");
+            }
+        } catch (err) {
+            console.error("Unable to save student:", err);
+
+            alert(
+                err.response?.data?.message ||
+                (student.id
+                    ? "Unable to update student. Please try again."
+                    : "Unable to add student. Please try again.")
+            );
+
+            return;
         }
 
+        // Fetch the latest data after a successful save/update
+        try {
+            await refreshStudents();
+        } catch (err) {
+            console.error(
+                "Student saved, but refreshing the list failed:",
+                err
+            );
+
+            alert(
+                "Student saved successfully, but the latest list could not be loaded. Please refresh and try again."
+            );
+        }
     };
 
     return (
-
         <div className="form-card">
-
             <h2>
-
                 {student.id ? "Update Student" : "Add Student"}
-
             </h2>
 
             <form onSubmit={handleSubmit}>
-
                 <input
                     type="text"
                     name="name"
@@ -153,17 +145,11 @@ function StudentForm({
                 />
 
                 <button className="save-btn" type="submit">
-
                     {student.id ? "Update Student" : "Save Student"}
-
                 </button>
-
             </form>
-
         </div>
-
     );
-
 }
 
 export default StudentForm;
